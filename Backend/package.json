@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "@inngest/agent-kit": "^0.8.0",
+    "@prisma/client": "^6.9.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -21,5 +22,8 @@
     "mongoose": "^8.15.2",
     "nodemailer": "^7.0.3",
     "nodemon": "^3.1.10"
+  },
+  "devDependencies": {
+    "prisma": "^6.9.0"
   }
 }

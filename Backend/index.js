@@ -1,12 +1,26 @@
-import dontenv from 'dotenv'
-import app from './app.js'
+import dotenv from 'dotenv';
+import app from './app.js';
+import prisma from './prismaClient.js';
 
-dontenv.config({
-    path:"../.env"
-})
+dotenv.config({
+  path: "./.env"
+});
 
-const port=process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 
-app.listen(port,()=>{
-    console.log("server is running on the port:",port);
-})
+const check = async () => {
+  try {
+   
+    await prisma.$connect();
+    console.log(" Database is connected");
+
+    app.listen(port, () => {
+      console.log(" Server is running on the port:", port);
+    });
+  } catch (error) {
+    console.error("Failed to connect to the database in index.js:", error);
+    process.exit(1);
+  }
+};
+
+check();
