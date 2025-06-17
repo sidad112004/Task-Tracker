@@ -39,8 +39,9 @@ model Task {
   title        String
   description  String
   expertiseReq String[]  
+  helpfullnote String?
   status       Status   @default(INPROGRESS)
-  difficulty   Int      @default(5)
+  priority     Priority      @default(low)
   dueDate      DateTime @default(now())
 
   assignedTo   User?    @relation("AssignedToTasks", fields: [assignedToId], references: [id])
@@ -54,6 +55,11 @@ model Task {
   @@map("tasks")
 }
 
+enum Priority{
+   low
+   medium
+   high
+}
 enum Status {
   INPROGRESS
   COMPLETED
