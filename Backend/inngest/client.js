@@ -1,7 +1,10 @@
 import {Inngest} from 'inngest';
 
 const inngest = new Inngest({
-  id: 'my-inngest-client'
+   id: "task-tracker-backend",  
+  name: "Task Tracker Backend",
+  eventKey: process.env.INNGEST_EVENT_KEY ,
+
 });
 
 export default inngest;

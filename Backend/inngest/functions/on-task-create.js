@@ -1,17 +1,18 @@
-import { inngest } from '../client.js'
+import  inngest  from '../client.js'
 import { NonRetriableError } from 'inngest'
 import prisma from "../../prismaClient.js"
 import analyzeticket from '../../utils/ai.js'
 
 
-const taskCreate = inngest.createFunction(
-    { id: 'task/create', retries: 2 },
+export const taskCreate = inngest.createFunction(
+    { id: 'task/created', retries: 2 },
     { event: 'task/created' },
 
     async ({ event, step }) => {
+       
         try {
             const { taskid } = event.data;
-
+            
             const task = await step.run("fetch-task", async () => {
                 const taskobject = await prisma.task.findUnique({
                     where: { id: taskid }
@@ -23,9 +24,13 @@ const taskCreate = inngest.createFunction(
 
                 return taskobject;
             });
+            
+            // console.log("0nd step completed");
 
             const airesp = await analyzeticket(task);
-
+            console.log("AI response:", airesp);
+            // console.log("1nd step completed");
+            
             const relatedSkills = await step.run("update-task", async () => {
                 let skill = [];
                 if (airesp) {
@@ -60,7 +65,7 @@ const taskCreate = inngest.createFunction(
             });
 
 
-
+            // console.log("2nd step completed");
             const moderator = await step.run("assign-moderator", async () => {
                 
                 const experts = await prisma.user.findMany({
@@ -125,7 +130,7 @@ const taskCreate = inngest.createFunction(
 
 
         } catch (error) {
-
+             console.log("error in on-task-create file");
         }
     }
 
