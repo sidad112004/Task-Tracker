@@ -4,6 +4,7 @@ const Asynchandler =(request)=>{
  }
  }
 
+ export default Asynchandler;
 
 // const Asynchandler = (fun) => {
 //    return async (req, res, next) => {
@@ -15,5 +16,3 @@ const Asynchandler =(request)=>{
 //         }
 //     };
 // };
-
-export default Asynchandler
