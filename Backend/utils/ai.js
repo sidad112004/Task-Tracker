@@ -1,5 +1,7 @@
 import { createAgent, gemini } from "@inngest/agent-kit"
 import Asynchandler from "./Asynchandler.js"
+
+
 const analyzeticket = Asynchandler(async (ticket) => {
     const supportAgent = createAgent({
         model: gemini({
@@ -72,4 +74,5 @@ Ticket information:
 
 
 });
+
 export default analyzeticket;
