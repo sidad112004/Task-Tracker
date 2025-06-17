@@ -18,7 +18,7 @@ app.use(cookieParser());
 import userroute from './router/user.route.js';
 import taskroute from './router/task.route.js';
 import messageroute from './router/message.route.js';
-import cookieParser from 'cookie-parser';
+
 
 
 app.use("/api/task", taskroute);
