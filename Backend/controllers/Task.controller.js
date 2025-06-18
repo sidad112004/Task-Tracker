@@ -32,44 +32,65 @@ const createTask = Asynchandler(async (req, res) => {
             taskid: newtask.id
         }
     })
+
+    const finaltask = await prisma.task.findUnique({
+        where: {
+            id: newtask.id
+        }
+    });
+
+    if (!finaltask) {
+        throw new ApiError(404, "Task not found after creation");
+    }
     
+
+    const newmessagetrack = await prisma.messageTracker.create({
+        data: {
+            userId: req.user.id.toString(),
+            expertId: finaltask.assignedToId || null,
+            taskId: finaltask.id,
+            chatActive: false
+        }
+    });
+
+     if(!newmessagetrack) {
+        throw new ApiError(500, "Failed to create message tracker for the task");
+    }
 
     return res
         .status(201)
         .json(new ApiRespoance({
             success: true,
             message: "Task created successfully",
-            data: newtask
+            data: finaltask
         }));
 })
 
 
 
-const alltask = Asynchandler(async(req,res)=>{
-    const tasks =await prisma.task.findMany({});
-    if (tasks.length ===0){
-        throw new ApiError(404,"No tasks found");
-    }
-    return res
-        .status(200)
-        .json(new ApiRespoance({
-            success: true,
-            message: "Tasks fetched successfully",
-            data: tasks
-        }))
-}) 
-
-
-
-const mytask =Asynchandler(async(req,res)=>{
-    const tasks=await prisma.task.findMany({
-        where:{
-            createdById:req.user.id.toString()
+const alltask = Asynchandler(async (req, res) => {
+    const user = await prisma.user.findUnique({
+        where: {
+            id: req.user.id.toString()
         }
     })
-    if (tasks.length === 0) {
-        throw new ApiError(404, "No tasks found for this user");
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
     }
+
+    const isAdmin = user.role === "ADMIN";
+
+    if (!isAdmin) {
+        throw new ApiError(403, "You do not have permission to view all tasks");
+    }
+
+    const tasks = await prisma.task.findMany({});
+
+    if (tasks.length === 0) {
+        throw new ApiError(404, "No tasks found");
+    }
+
     return res
         .status(200)
         .json(new ApiRespoance({
@@ -81,18 +102,46 @@ const mytask =Asynchandler(async(req,res)=>{
 
 
 
-const activetask = Asynchandler(async(req,res)=>{
-    const tasks =await prisma.task.findMany({
-        where:{
-            status:"INPROGRESS",
+const mytask = Asynchandler(async (req, res) => {
+
+
+    const tasks = await prisma.task.findMany({
+        where: {
             createdById: req.user.id.toString()
         }
     })
 
-    if(tasks.length === 0){
+
+    if (tasks.length === 0) {
+        throw new ApiError(404, "No tasks found for this user");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiRespoance({
+            success: true,
+            message: "Tasks fetched successfully",
+            data: tasks
+        }))
+})
+
+
+
+const activetask = Asynchandler(async (req, res) => {
+
+    const tasks = await prisma.task.findMany({
+        where: {
+            status: "INPROGRESS",
+            createdById: req.user.id.toString()
+        }
+    })
+
+
+    if (tasks.length === 0) {
         throw new ApiError(404, "No active tasks found for this user");
     }
-    
+
+
     return res
         .status(200)
         .json(new ApiRespoance({
@@ -104,4 +153,4 @@ const activetask = Asynchandler(async(req,res)=>{
 
 
 
-export { createTask ,alltask,mytask,activetask };
+export { createTask, alltask, mytask, activetask };
