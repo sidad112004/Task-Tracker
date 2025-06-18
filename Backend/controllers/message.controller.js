@@ -29,21 +29,34 @@ const myallMessages = Asynchandler(async (req, res) => {
 
 
 const createmessage=Asynchandler(async(req,res)=>{
-    const { messagetrackid } = req.params;
-    const { content } = req.body;
+   
+    const { content,messagetrackid } = req.body;
+
+    
+
+    if(!messagetrackid){
+        throw new ApiError(400, "Message track ID is required");
+    }
+
+    if(!content){
+        throw new ApiError(400, "Message content is required");
+    }
+
     const messagetrack= await prisma.messageTracker.findUnique({
         where:{
             id: messagetrackid
         }
     })
-    if(!messagetrackid){
-        throw new ApiError(400, "Message track ID is required");
+
+
+    if(!messagetrack){
+        throw new ApiError(404, "Message track not found");
     }
-    if(!content){
-        throw new ApiError(400, "Message content is required");
-    }
+
     let to;
     let from;
+
+
     if(messagetrack.userId === req.user.id.toString()){
         from =messagetrack.userId;
         to =messagetrack.expertId;
@@ -52,6 +65,8 @@ const createmessage=Asynchandler(async(req,res)=>{
         from =messagetrack.expertId;
         to =messagetrack.userId;
     }
+
+
     const newmessage=await prisma.message.create({
         data :{
             content: content,
@@ -61,8 +76,71 @@ const createmessage=Asynchandler(async(req,res)=>{
 
         }
     })
+    return res
+        .status(201)
+        .json(new ApiRespoance({
+        success: true,
+        message: "Message created successfully",
+        data: newmessage
+    }))
 
 })
 
 
-export { myallMessages ,createmessage };
+const chatactive=Asynchandler(async (req,res)=>{
+
+    const {messagetrackid} = req.body;
+
+    if (!messagetrackid) {
+        throw new ApiError(400, "Message track ID is required");
+    }
+
+    const user= await prisma.user.findUnique({
+        where: {
+            id: req.user.id.toString()
+        }
+    })
+    
+    if(user.role === "USER"){
+        throw new ApiError(403, "Only expert and admin can update chat active status");
+    }
+
+    const messagetrack = await prisma.messageTracker.findUnique({
+        where: {
+            id: messagetrackid
+        }
+    })
+    if (!messagetrack) {
+        throw new ApiError(404, "Message track not found");
+    }
+    if(messagetrack.chatActive===true){
+        await prisma.messageTracker.update({
+            where: {
+                id: messagetrackid
+            },
+            data: {
+                chatActive: false
+            }
+        })
+    }
+    else{
+        await prisma.messageTracker.update({
+            where: {
+                id: messagetrackid
+            },
+            data: {
+                chatActive: true
+            }
+        })
+    }
+
+    return res.status(200).json(new ApiRespoance({
+        success: true,
+        message: "Chat active status updated successfully",
+        data: messagetrack
+    }))
+
+})
+
+
+export { myallMessages ,createmessage ,chatactive };
