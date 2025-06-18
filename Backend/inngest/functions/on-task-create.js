@@ -25,11 +25,11 @@ export const taskCreate = inngest.createFunction(
                 return taskobject;
             });
             
-            // console.log("0nd step completed");
+            
 
             const airesp = await analyzeticket(task);
-            console.log("AI response:", airesp);
-            // console.log("1nd step completed");
+          
+          
             
             const relatedSkills = await step.run("update-task", async () => {
                 let skill = [];
@@ -64,8 +64,6 @@ export const taskCreate = inngest.createFunction(
                 return skill;
             });
 
-
-            // console.log("2nd step completed");
             const moderator = await step.run("assign-moderator", async () => {
                 
                 const experts = await prisma.user.findMany({

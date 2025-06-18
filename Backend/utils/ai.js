@@ -57,18 +57,18 @@ Ticket information:
 
     const raw = response?.output?.[0]?.content;
     if (!raw) {
-      console.error("❌ No content found in AI response.");
+      console.error(" No content found in AI response.");
       return null;
     }
 
-    console.log("AI raw response:", raw);
+    // console.log("AI raw response:", raw);
 
     const cleaned = raw.trim().replace(/^```json|```$/gim, "").trim();
 
     const parsed = JSON.parse(cleaned);
     return parsed;
   } catch (error) {
-    console.error("❌ Failed to parse AI response:", error.message);
+    console.error(" Failed to parse AI response:", error.message);
     return null;
   }
 };

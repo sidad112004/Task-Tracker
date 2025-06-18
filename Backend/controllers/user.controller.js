@@ -36,7 +36,8 @@ const singupuser = Asynchandler(async (req, res) => {
         data: {
             name,
             email,
-            password: hashedpassword
+            password: hashedpassword,
+            skill: []
         }
     })
 

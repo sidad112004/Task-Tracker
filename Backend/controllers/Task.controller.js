@@ -43,4 +43,65 @@ const createTask = Asynchandler(async (req, res) => {
         }));
 })
 
-export { createTask };
+
+
+const alltask = Asynchandler(async(req,res)=>{
+    const tasks =await prisma.task.findMany({});
+    if (tasks.length ===0){
+        throw new ApiError(404,"No tasks found");
+    }
+    return res
+        .status(200)
+        .json(new ApiRespoance({
+            success: true,
+            message: "Tasks fetched successfully",
+            data: tasks
+        }))
+}) 
+
+
+
+const mytask =Asynchandler(async(req,res)=>{
+    const tasks=await prisma.task.findMany({
+        where:{
+            createdById:req.user.id.toString()
+        }
+    })
+    if (tasks.length === 0) {
+        throw new ApiError(404, "No tasks found for this user");
+    }
+    return res
+        .status(200)
+        .json(new ApiRespoance({
+            success: true,
+            message: "Tasks fetched successfully",
+            data: tasks
+        }))
+})
+
+
+
+const activetask = Asynchandler(async(req,res)=>{
+    const tasks =await prisma.task.findMany({
+        where:{
+            status:"INPROGRESS",
+            createdById: req.user.id.toString()
+        }
+    })
+
+    if(tasks.length === 0){
+        throw new ApiError(404, "No active tasks found for this user");
+    }
+    
+    return res
+        .status(200)
+        .json(new ApiRespoance({
+            success: true,
+            message: "Active tasks fetched successfully",
+            data: tasks
+        }))
+})
+
+
+
+export { createTask ,alltask,mytask,activetask };
