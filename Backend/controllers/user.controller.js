@@ -65,7 +65,7 @@ const loginuser = Asynchandler(async (req, res) => {
             email
         }
     })
-   
+
     if (!user) {
         throw new ApiError(404, "User not found");
     }
@@ -76,12 +76,12 @@ const loginuser = Asynchandler(async (req, res) => {
         throw new ApiError(400, "Invalid credentials");
     }
 
-    const token= await getJwtToken(user.id);
-  
+    const token = await getJwtToken(user.id);
+
 
     const options = {
         httpOnly: true,
-        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), 
+        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     };
 
     const finaluser = await prisma.user.findUnique({
@@ -92,40 +92,40 @@ const loginuser = Asynchandler(async (req, res) => {
             id: true,
             name: true,
             email: true
-          
+
         }
     });
-    
-   return res
-     .status(200)
-     .cookie("Token",token,options)
-     .json(new ApiRespoance(200,  finaluser  , "User logged in successfully"));
-            
+
+    return res
+        .status(200)
+        .cookie("Token", token, options)
+        .json(new ApiRespoance(200, finaluser, "User logged in successfully"));
+
 });
 
 
 
-const logoutuser =Asynchandler(async (req,res)=>{
-   
-    const userid= req.user.id;
-    
-    if(!userid){
+const logoutuser = Asynchandler(async (req, res) => {
+
+    const userid = req.user.id;
+
+    if (!userid) {
         throw new ApiError(400, "User not found");
     }
-    const loginuser=await prisma.user.findUnique({
-        where:{
-            id:userid
+    const loginuser = await prisma.user.findUnique({
+        where: {
+            id: userid
         }
     })
-    if(!loginuser){
+    if (!loginuser) {
         throw new ApiError(404, "User not found");
     }
     const options = {
         httpOnly: true,
-        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), 
+        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     };
 
-     return res
+    return res
         .status(200)
         .clearCookie("Token", options)
         .json(new ApiRespoance(200, null, "User logged out successfully"));
@@ -133,4 +133,54 @@ const logoutuser =Asynchandler(async (req,res)=>{
 })
 
 
-export { singupuser, loginuser, logoutuser };
+
+const updateuserbyadmin = Asynchandler(async (req, res) => {
+
+
+    const { role, skill, useremail } = req.body;
+
+
+    const admin = await prisma.user.findUnique({
+        where: {
+            id: req.user.id
+        }
+    })
+
+    if (!admin || admin.role !== "ADMIN") {
+        throw new ApiError(403, "Only admin can update user");
+    }
+
+    if (!role || !useremail) {
+        throw new ApiError(400, "Please provide all fields");
+    }
+
+    const user = await prisma.user.findUnique({
+        where: {
+            email: useremail
+        }
+    })
+
+    if (!user) {
+        throw new ApiError(404, "User not found wrong email");
+    }
+
+    const updatedUser = await prisma.user.update({
+        where: {
+            id: user.id
+        },
+        data: {
+            role,
+            skill
+        }
+    })
+
+    return res
+    .status(200)
+    .json(
+        new ApiRespoance(200, updatedUser, "User updated successfully")
+    );
+})
+
+
+
+export { singupuser, loginuser, logoutuser, updateuserbyadmin };

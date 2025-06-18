@@ -153,4 +153,56 @@ const activetask = Asynchandler(async (req, res) => {
 
 
 
-export { createTask, alltask, mytask, activetask };
+const notcompletedtask = Asynchandler(async (req, res) => {
+
+
+  const admin = await prisma.user.findUnique({
+        where: {
+            id: req.user.id.toString()
+        }
+    });
+
+
+
+    if (!admin || admin.role !== "ADMIN") {
+        throw new ApiError(403, "Only admin can update overdue tasks");
+    }
+
+
+    
+    const currentDate = new Date();
+
+    const overdueTasks = await prisma.task.findMany({
+        where: {
+            dueDate: {
+                lt: currentDate
+            },
+            status: {
+                in: ["INPROGRESS"] 
+            }
+        }
+    });
+
+
+    const updatePromises = overdueTasks.map(task =>
+        prisma.task.update({
+            where: { id: task.id },
+            data: { status: "NOTCOMPLETED" }
+        })
+    );
+
+    await Promise.all(updatePromises);
+   
+    return res
+        .status(200)
+        .json(new ApiRespoance({
+            success: true,
+            message: "Overdue tasks updated to NOTCOMPLETED successfully",
+            data: overdueTasks
+        }));
+
+});
+
+
+
+export { createTask, alltask, mytask, activetask , notcompletedtask };
