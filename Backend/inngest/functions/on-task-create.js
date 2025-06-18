@@ -1,4 +1,4 @@
-import  inngest  from '../client.js'
+import inngest from '../client.js'
 import { NonRetriableError } from 'inngest'
 import prisma from "../../prismaClient.js"
 import analyzeticket from '../../utils/ai.js'
@@ -9,10 +9,10 @@ export const taskCreate = inngest.createFunction(
     { event: 'task/created' },
 
     async ({ event, step }) => {
-       
+
         try {
             const { taskid } = event.data;
-            
+
             const task = await step.run("fetch-task", async () => {
                 const taskobject = await prisma.task.findUnique({
                     where: { id: taskid }
@@ -24,13 +24,13 @@ export const taskCreate = inngest.createFunction(
 
                 return taskobject;
             });
-            
-            
+
+
 
             const airesp = await analyzeticket(task);
-          
-          
-            
+
+
+
             const relatedSkills = await step.run("update-task", async () => {
                 let skill = [];
                 if (airesp) {
@@ -65,7 +65,7 @@ export const taskCreate = inngest.createFunction(
             });
 
             const moderator = await step.run("assign-moderator", async () => {
-                
+
                 const experts = await prisma.user.findMany({
                     where: {
                         role: "EXPERT",
@@ -99,7 +99,7 @@ export const taskCreate = inngest.createFunction(
                         },
                     });
                 } else {
-                   
+
                     const admin = await prisma.user.findFirst({
                         where: {
                             role: "ADMIN",
@@ -112,7 +112,7 @@ export const taskCreate = inngest.createFunction(
                 }
 
                 await prisma.task.update({
-                    where: { id: task.id }, 
+                    where: { id: task.id },
                     data: {
                         assignedToId: assignedUserId,
                     },
@@ -120,15 +120,25 @@ export const taskCreate = inngest.createFunction(
                 const user = await prisma.user.findUnique({
                     where: { id: assignedUserId }
                 });
-                
+
+
+                const newmessagetrack = await prisma.messageTracker.create({
+                    data: {
+                        userId: task.createdById.toString(),
+                        expertId: user.id.toString(),
+                        taskId: task.id,
+                        chatActive: false
+                    }
+                });
+
                 return user;
-                
+
             })
-          
+
 
 
         } catch (error) {
-             console.log("error in on-task-create file");
+            console.log("error in on-task-create file");
         }
     }
 

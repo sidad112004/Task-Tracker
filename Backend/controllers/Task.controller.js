@@ -43,20 +43,8 @@ const createTask = Asynchandler(async (req, res) => {
         throw new ApiError(404, "Task not found after creation");
     }
     
-
-    const newmessagetrack = await prisma.messageTracker.create({
-        data: {
-            userId: req.user.id.toString(),
-            expertId: finaltask.assignedToId || null,
-            taskId: finaltask.id,
-            chatActive: false
-        }
-    });
-
-     if(!newmessagetrack) {
-        throw new ApiError(500, "Failed to create message tracker for the task");
-    }
-
+    
+    
     return res
         .status(201)
         .json(new ApiRespoance({

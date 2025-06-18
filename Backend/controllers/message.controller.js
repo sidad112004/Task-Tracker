@@ -12,9 +12,10 @@ const myallMessages = Asynchandler(async (req, res) => {
 
     const messages = await prisma.message.findMany({
         where: {
-            messageTrackerId: messagetrackid
+            messageTrackerId: messagetrackid.toString()
         }
     })
+
     if (!messages || messages.length === 0) {
         throw new ApiError(404, "No messages found for this track ID");
     }
@@ -41,31 +42,37 @@ const createmessage=Asynchandler(async(req,res)=>{
     if(!content){
         throw new ApiError(400, "Message content is required");
     }
-
+   
     const messagetrack= await prisma.messageTracker.findUnique({
         where:{
             id: messagetrackid
         }
     })
+    
 
 
     if(!messagetrack){
         throw new ApiError(404, "Message track not found");
     }
 
+    if(messagetrack.chatActive === false){
+        throw new ApiError(403, "Chat is not active.");
+    }
+
     let to;
     let from;
-
-
-    if(messagetrack.userId === req.user.id.toString()){
-        from =messagetrack.userId;
-        to =messagetrack.expertId;
+   
+      
+    if(messagetrack.userId.toString() === req.user.id.toString()){
+        from =messagetrack.userId.toString();
+        to =messagetrack.expertId.toString();
     }
     else{
-        from =messagetrack.expertId;
-        to =messagetrack.userId;
+        from =messagetrack.expertId.toString();
+        to =messagetrack.userId.toString();
     }
 
+    
 
     const newmessage=await prisma.message.create({
         data :{
