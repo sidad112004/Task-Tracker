@@ -11,7 +11,6 @@ function Authlayout({ children, role = "USER"}) {
   useEffect(() => {
     setLoader(true);
 
-    // console.log(authStatus, userRole, role);
 
     if (!authStatus) {
        setLoader(false);

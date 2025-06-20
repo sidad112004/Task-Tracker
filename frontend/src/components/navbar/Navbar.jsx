@@ -1,7 +1,7 @@
 import React from 'react'
-import Logout from './Logout'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import Logout from './Logout'
 
 function Navbar() {
   const authStatus = useSelector((state) => state.auth.status)
@@ -12,7 +12,7 @@ function Navbar() {
     {
       name: 'Home',
       slug: '/',
-      active: authStatus
+      active: authStatus && role === 'USER'
     },
     {
       name: 'Login',
@@ -33,8 +33,27 @@ function Navbar() {
       name: 'Update User',
       slug: '/updateuser',
       active: authStatus && role === 'ADMIN'
-    }
-    // You can add more role-specific items here if needed
+    },
+    {
+      name: 'All Tasks',
+      slug: '/alltask',
+      active: authStatus && role === 'ADMIN'
+    },
+    {
+      name: 'Not Completed',
+      slug: '/notcompletedtask',
+      active: authStatus && role === 'ADMIN'
+    },
+    {
+      name: 'Completed Tasks',
+      slug: '/completedtask',
+      active: authStatus && role === 'EXPERT'
+    },
+    {
+      name: 'Todo Tasks',
+      slug: '/todotask',
+      active: authStatus && role === 'EXPERT'
+    },
   ]
 
   return (
