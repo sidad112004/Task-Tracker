@@ -42,9 +42,9 @@ const createTask = Asynchandler(async (req, res) => {
     if (!finaltask) {
         throw new ApiError(404, "Task not found after creation");
     }
-    
-    
-    
+
+
+
     return res
         .status(201)
         .json(new ApiRespoance({
@@ -144,7 +144,7 @@ const activetask = Asynchandler(async (req, res) => {
 const notcompletedtask = Asynchandler(async (req, res) => {
 
 
-  const admin = await prisma.user.findUnique({
+    const admin = await prisma.user.findUnique({
         where: {
             id: req.user.id.toString()
         }
@@ -157,7 +157,7 @@ const notcompletedtask = Asynchandler(async (req, res) => {
     }
 
 
-    
+
     const currentDate = new Date();
 
     const overdueTasks = await prisma.task.findMany({
@@ -166,7 +166,7 @@ const notcompletedtask = Asynchandler(async (req, res) => {
                 lt: currentDate
             },
             status: {
-                in: ["INPROGRESS"] 
+                in: ["INPROGRESS"]
             }
         }
     });
@@ -180,7 +180,7 @@ const notcompletedtask = Asynchandler(async (req, res) => {
     );
 
     await Promise.all(updatePromises);
-   
+
     return res
         .status(200)
         .json(new ApiRespoance({
@@ -192,5 +192,54 @@ const notcompletedtask = Asynchandler(async (req, res) => {
 });
 
 
+const getTask = Asynchandler(async (req, res) => {
+    const { taskId } = req.params;
 
-export { createTask, alltask, mytask, activetask , notcompletedtask };
+    if (!taskId) {
+        throw new ApiError(400, "Task ID is required");
+    }
+
+    const task = await prisma.task.findUnique({
+        where: {
+            id: taskId
+        }
+    });
+
+    if (!task) {
+        throw new ApiError(404, "Task not found");
+    }
+
+    const user = await prisma.user.findUnique({
+        where: {
+            id: task.assignedToId.toString()
+        }
+    })
+
+    if (!user) {
+        throw new ApiError(404, "User not found for the assigned task");
+    }
+    const messageTracker = await prisma.messageTracker.findFirst({
+        where: {
+            taskId: task.id,
+        },
+    });
+
+    const completetask = {
+        ...task,
+        assignedTo: {
+            id: user.id,
+            name: user.name,
+            email: user.email
+        },
+        messagetrackid: messageTracker.id
+    };
+    return res
+        .status(200)
+        .json(new ApiRespoance({
+            success: true,
+            message: "Task fetched successfully",
+            data: completetask
+        }));
+})
+
+export { createTask, alltask, mytask, activetask, notcompletedtask, getTask };
