@@ -62,9 +62,6 @@ function Login() {
               />
             </div>
 
-            <div className="text-right">
-              <a href="#" className="link link-hover text-sm">Forgot password?</a>
-            </div>
 
             <button type="submit" className="btn btn-primary btn-lg w-full mt-2">
               Login
