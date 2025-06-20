@@ -11,6 +11,7 @@ import Completedtask from './pages/Completedtask';
 import Notcompletedtask from './pages/Notcompletedtask';
 import Todotask from './pages/Todotask';
 import Authlayout from './components/Authlayout';
+import Startpage from './pages/Startpage';
 
 const router = createBrowserRouter([
   {
@@ -28,10 +29,18 @@ const router = createBrowserRouter([
       },
 
       {
+        path: 'home',
+        element: (
+          <Authlayout role="USER">
+            <Home />
+          </Authlayout>
+        ),
+      },
+      {
         path: '',
         element: (
-          <Authlayout>
-            <Home />
+          <Authlayout >
+            <Startpage />
           </Authlayout>
         ),
       },

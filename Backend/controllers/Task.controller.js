@@ -282,19 +282,20 @@ const notcompletedtask = Asynchandler(async (req, res) => {
 
 });
 
+
 const getTask = Asynchandler(async (req, res) => {
     const { taskId } = req.params;
-
+    
     if (!taskId) {
         throw new ApiError(400, "Task ID is required");
     }
-
+    
     const task = await prisma.task.findUnique({
         where: {
-            id: taskId
+            id: taskId.toString()
         }
     });
-
+    
     if (!task) {
         throw new ApiError(404, "Task not found");
     }
@@ -308,12 +309,13 @@ const getTask = Asynchandler(async (req, res) => {
     if (!user) {
         throw new ApiError(404, "User not found for the assigned task");
     }
+    console.log(task)
     const messageTracker = await prisma.messageTracker.findFirst({
         where: {
-            taskId: task.id,
+            taskId: task.id.toString(),
         },
     });
-
+    //  console.log(messageTracker)
     const completetask = {
         ...task,
         assignedTo: {
@@ -323,6 +325,7 @@ const getTask = Asynchandler(async (req, res) => {
         },
         messagetrackid: messageTracker.id
     };
+
     return res
         .status(200)
         .json(new ApiRespoance({

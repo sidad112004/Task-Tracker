@@ -6,7 +6,6 @@ import { toast } from 'react-hot-toast';
 function Conversation({ props: messagetrackid }) {
   const role = useSelector((state) => state.auth.role);
   const userId = useSelector((state) => state.auth.userdata?.id);
-  const user= useSelector((state) => state.auth.userdata);
   const [messages, setMessages] = useState([]);
   const [chatEnabled, setChatEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -21,7 +20,6 @@ function Conversation({ props: messagetrackid }) {
         const data = response.data.status.data || [];
         setMessages(data);
 
-        
         const chatStatus = response?.data?.status?.chatActive;
         if (typeof chatStatus === 'boolean') {
           setChatEnabled(chatStatus);
@@ -38,22 +36,20 @@ function Conversation({ props: messagetrackid }) {
 
     fetchMessages();
   }, [messagetrackid]);
-  
-  console.log(user);
-
 
   const handleToggleChat = async () => {
+    const nextStatus = !chatEnabled;
     setToggling(true);
     try {
       const response = await axios.post('/api/message/chatactive', {
         messagetrackid,
-        val: !chatEnabled,
+        val: nextStatus,
       });
 
       const serverStatus = response?.data?.status?.data?.chatActive;
 
       if (typeof serverStatus === 'boolean') {
-        setChatEnabled(() => serverStatus); // ✅ use callback form
+        setChatEnabled(serverStatus);
         toast.success(`Chat ${serverStatus ? 'enabled' : 'disabled'} successfully`);
       } else {
         toast.error('Unexpected response from server');
@@ -65,7 +61,6 @@ function Conversation({ props: messagetrackid }) {
       setToggling(false);
     }
   };
-
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -97,14 +92,53 @@ function Conversation({ props: messagetrackid }) {
   return (
     <div className="bg-base-100 p-4 border border-base-300 rounded-md">
       {(role === 'ADMIN' || role === 'EXPERT') && (
-        <div className="mb-4 text-center">
-          <button
-            className={`btn ${chatEnabled ? 'btn-error' : 'btn-success'} btn-sm`}
-            onClick={handleToggleChat}
-            disabled={toggling}
-          >
-            {toggling ? 'Updating...' : chatEnabled ? 'Disable Chat' : 'Enable Chat'}
-          </button>
+        <div className="mb-4 flex justify-center">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <span className="text-sm font-medium">Chat</span>
+            <input
+              type="checkbox"
+              className="hidden"
+              checked={chatEnabled}
+              onChange={handleToggleChat}
+              disabled={toggling}
+            />
+            <div className="w-10 h-6 relative">
+              <svg
+                aria-label="enabled"
+                className={`absolute w-6 h-6 top-0 left-0 transition-opacity duration-200 ${
+                  chatEnabled ? 'opacity-100' : 'opacity-0'
+                }`}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+              >
+                <g
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                  strokeWidth="4"
+                  fill="none"
+                  stroke="green"
+                >
+                  <path d="M20 6 9 17l-5-5"></path>
+                </g>
+              </svg>
+              <svg
+                aria-label="disabled"
+                className={`absolute w-6 h-6 top-0 left-0 transition-opacity duration-200 ${
+                  !chatEnabled ? 'opacity-100' : 'opacity-0'
+                }`}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="red"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </div>
+          </label>
         </div>
       )}
 

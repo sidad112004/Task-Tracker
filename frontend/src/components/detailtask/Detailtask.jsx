@@ -16,7 +16,7 @@ function Detailtask() {
   useEffect(() => {
     const fetchTask = async () => {
       try {
-        // console.log(id)
+        console.log(id)
         const response = await axios.get(`/api/task/${id}`,
           {
             withCredentials: true

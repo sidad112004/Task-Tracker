@@ -11,7 +11,7 @@ function Navbar() {
   const navItems = [
     {
       name: 'Home',
-      slug: '/',
+      slug: '/home',
       active: authStatus && role === 'USER'
     },
     {
