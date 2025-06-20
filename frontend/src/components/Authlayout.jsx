@@ -6,11 +6,14 @@ function Authlayout({ children, role = "USER"}) {
   const navigate = useNavigate();
   const authStatus = useSelector((state) => state.auth.status);
   const userRole = useSelector((state) => state.auth.role);
+  const userData = useSelector((state) => state.auth.userdata);
   const [loader, setLoader] = useState(true);
+  // console.log(authStatus, userRole, userData)
+  //  console.log(userData)
 
   useEffect(() => {
     setLoader(true);
-
+  
 
     if (!authStatus) {
        setLoader(false);

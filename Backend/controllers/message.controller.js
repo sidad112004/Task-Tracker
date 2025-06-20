@@ -9,7 +9,17 @@ const myallMessages = Asynchandler(async (req, res) => {
     if (!messagetrackid) {
         throw new ApiError(400, "Message track ID is required");
     }
+    const messagetrack = await prisma.messageTracker.findUnique({
+        where: {
+            id: messagetrackid.toString()
+        }
+    });
 
+    if(messagetrack.userId !== req.user.id && messagetrack.expertId !== req.user.id){
+        throw new ApiError(403, "You are not authorized to view this conversation");    
+
+    }
+    
     const messages = await prisma.message.findMany({
         where: {
             messageTrackerId: messagetrackid.toString()
@@ -22,7 +32,7 @@ const myallMessages = Asynchandler(async (req, res) => {
     return res
         .status(200)
         .json(new ApiRespoance({
-            success: true,
+            status: true,
             message: "Messages fetched successfully",
             data: messages
         }))
@@ -96,7 +106,11 @@ const createmessage=Asynchandler(async(req,res)=>{
 
 const chatactive=Asynchandler(async (req,res)=>{
 
-    const {messagetrackid} = req.body;
+    const {messagetrackid,val} = req.body;
+   
+    if(val !== true && val !== false){
+        throw new ApiError(400, "Invalid value for chat active status");
+    }
 
     if (!messagetrackid) {
         throw new ApiError(400, "Message track ID is required");
@@ -111,35 +125,34 @@ const chatactive=Asynchandler(async (req,res)=>{
     if(user.role === "USER"){
         throw new ApiError(403, "Only expert and admin can update chat active status");
     }
-
+    
     const messagetrack = await prisma.messageTracker.findUnique({
         where: {
             id: messagetrackid
         }
     })
+
+    
     if (!messagetrack) {
         throw new ApiError(404, "Message track not found");
     }
-    if(messagetrack.chatActive===true){
+    
+    if(messagetrack.expertId.toString() !== req.user.id.toString()){
+        throw new ApiError(403, "You are not authorized to update this message track");
+    }
+    
+
+    
         await prisma.messageTracker.update({
             where: {
                 id: messagetrackid
             },
             data: {
-                chatActive: false
-            }
+                chatActive: val
+            }   
         })
-    }
-    else{
-        await prisma.messageTracker.update({
-            where: {
-                id: messagetrackid
-            },
-            data: {
-                chatActive: true
-            }
-        })
-    }
+    
+    
 
     return res.status(200).json(new ApiRespoance({
         success: true,
