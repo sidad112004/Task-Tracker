@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import { singupuser,loginuser ,logoutuser,updateuserbyadmin} from '../controllers/user.controller.js';
+import { singupuser,loginuser ,logoutuser,updateuserbyadmin,getuser} from '../controllers/user.controller.js';
 import authverification from '../middleware/auth.middleware.js';
 
 
@@ -17,7 +17,7 @@ userroute.route('/logout').get(authverification,logoutuser);
 
 userroute.route('/updatebyadmin').put(authverification,updateuserbyadmin);
 
-
+userroute.route('/getuser').get(authverification,getuser);
 
 
 

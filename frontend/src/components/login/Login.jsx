@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { login as authLogin } from '../../store/authSlice'
 
 function Login() {
+
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,17 +24,46 @@ function Login() {
     }));
   };
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
+
     e.preventDefault();
-    console.log('Login Data:', formData);
-    // You can add your login API call here
+
+    const loadingToast = toast.loading('Logging in...');
+
+
+    try {
+      const response = await axios.post('/api/user/login',
+        formData,
+        { withCredentials: true }
+      );
+      
+
+      
+      const userdata = response.data.data;
+
+      if (userdata) {
+        dispatch(authLogin(userdata));
+      }
+      toast.dismiss(loadingToast);
+      toast.success(response.data?.message || 'Login successful!');
+
+      
+      navigate('/');
+    } catch (error) {
+      console.log(error);
+      toast.dismiss(loadingToast);
+
+      const errorMsg = error?.response?.data?.message || 'Login failed. Please try again.';
+      toast.error(errorMsg);
+    }
   };
 
   return (
     <div className="hero min-h-screen bg-base-200">
       <div className="hero-content flex-col lg:flex-row-reverse gap-16">
-        
-        {/* Left info panel */}
+
+
         <div className="text-center lg:text-left max-w-xl">
           <h1 className="text-5xl font-bold mb-4">Login Now!</h1>
           <p className="py-4 text-lg">
@@ -32,10 +71,9 @@ function Login() {
           </p>
         </div>
 
-        {/* Login Form */}
+
         <div className="card bg-base-100 shadow-2xl md:w-96 w-full p-8 rounded-xl">
           <form onSubmit={handleSubmit} className="space-y-4">
-            
             <div>
               <label className="label font-semibold">Email</label>
               <input
@@ -61,7 +99,6 @@ function Login() {
                 required
               />
             </div>
-
 
             <button type="submit" className="btn btn-primary btn-lg w-full mt-2">
               Login

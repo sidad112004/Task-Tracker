@@ -91,7 +91,8 @@ const loginuser = Asynchandler(async (req, res) => {
         select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            role: true,
 
         }
     });
@@ -181,6 +182,30 @@ const updateuserbyadmin = Asynchandler(async (req, res) => {
     );
 })
 
+const getuser = Asynchandler(async (req, res) => {
+    const userId=req.user.id;
+    if (!userId) {
+        throw new ApiError(400, "User not found");
+    }
+    const user = await prisma.user.findUnique({
+        where: {
+            id: userId
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            
+        }
+    })
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+    return res
+        .status(200)
+        .json(new ApiRespoance(200, user, "User fetched successfully")
+    );
+})
 
-
-export { singupuser, loginuser, logoutuser, updateuserbyadmin };
+export { singupuser, loginuser, logoutuser, updateuserbyadmin, getuser };
