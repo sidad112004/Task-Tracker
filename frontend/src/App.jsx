@@ -1,25 +1,38 @@
 import React from 'react'
 import Navbar from './components/navbar/Navbar'
-import Home from './components/home/Home'
-import Detailtask from './components/detailtask/Detailtask'
-import Createtask from './components/createtask/Createtask.jsx'
-import Updateuser from './components/updateuser/Updateuser.jsx'
-import Signup from './components/signup/Signup.jsx'
-import Login from './components/login/Login.jsx'
+import Home from './pages/Home.jsx'
+import Signup from './pages/Signup.jsx'
+import { createBrowserRouter } from 'react-router-dom'
+import Login from './pages/Login.jsx'
+
 function App() {
   return (
     <>
-    <Navbar/>
-    {/* <Home/> */}
-    {/* <Detailtask/> */}
-    {/* <Createtask/> */}
-    {/* <Updateuser/> */}
-    {/* <Signup/> */}
-    <Login/>
+     <Navbar/>
+     <Routing/>
     </>
   )
 }
 
+export function Routing() {
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: <Home />,
+      children: [
+        {
+          path: '/signup',
+          element: <Signup />
+        },
+        {
+          path: '/login',
+          element: <Login />
+        }
+      ]
+    }
+  ])
+
+}
 
 
 export default App
