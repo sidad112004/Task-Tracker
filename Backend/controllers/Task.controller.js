@@ -309,7 +309,7 @@ const getTask = Asynchandler(async (req, res) => {
     if (!user) {
         throw new ApiError(404, "User not found for the assigned task");
     }
-    console.log(task)
+    // console.log(task)
     const messageTracker = await prisma.messageTracker.findFirst({
         where: {
             taskId: task.id.toString(),
