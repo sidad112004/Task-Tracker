@@ -1,4 +1,5 @@
 import React from 'react'
+import Logout from './Logout'
 
 function Navbar() {
     return (
@@ -41,7 +42,7 @@ function Navbar() {
                     </ul>
                 </div>
                 <div className="navbar-end">
-                    <a className="btn">Button</a>
+                    <Logout/>
                 </div>
             </div>
 
