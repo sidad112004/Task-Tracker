@@ -15,13 +15,11 @@ function Authlayout({ children, role = "USER"}) {
 
     if (!authStatus) {
        setLoader(false);
-      navigate('/login');
+       navigate('/login');
     } else if (role !== userRole) {
       navigate('/');
-    } else {
-      setLoader(false);
-    }
-
+    } 
+     setLoader(false);
   }, [authStatus, userRole, navigate, role]);
 
 

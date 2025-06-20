@@ -124,10 +124,9 @@ const activetask = Asynchandler(async (req, res) => {
         }
     })
 
-
-    if (tasks.length === 0) {
+     if(!tasks){
         throw new ApiError(404, "No active tasks found for this user");
-    }
+     }
 
 
     return res
@@ -139,7 +138,78 @@ const activetask = Asynchandler(async (req, res) => {
         }))
 })
 
+const todotask = Asynchandler(async (req, res) => {
+    const user = await prisma.user.findUnique({
+        where: {
+            id: req.user.id.toString()
+        }
+    });
+    
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
 
+    if (user.role !== "EXPERT") {
+        throw new ApiError(403, "Only experts can view TODO tasks");
+    }
+
+    const tasks = await prisma.task.findMany({
+
+        where: {
+            assignedToId: req.user.id.toString(),
+            status:"INPROGRESS"
+        }
+
+    });
+
+    if (!tasks) {
+        throw new ApiError(404, "No TODO tasks found");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiRespoance({
+            success: true,
+            message: "TODO tasks fetched successfully",
+            data: tasks
+        }));
+})
+
+const completedtask = Asynchandler(async (req, res) => {
+     const user = await prisma.user.findUnique({
+        where: {
+            id: req.user.id.toString()
+        }
+    });
+
+    if(!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    if (user.role !== "EXPERT") {
+        throw new ApiError(403, "Only experts can view completed tasks");
+    }
+
+    const tasks = await prisma.task.findMany({
+        where: {
+            
+            assignedToId: req.user.id.toString(),
+            status:"COMPLETED"
+        }
+    });     
+
+    if (!tasks) {
+        throw new ApiError(404, "No completed tasks found for this user");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiRespoance({
+            success: true,
+            message: "Completed tasks fetched successfully",
+            data: tasks
+        }));
+})
 
 const notcompletedtask = Asynchandler(async (req, res) => {
 
@@ -212,7 +282,6 @@ const notcompletedtask = Asynchandler(async (req, res) => {
 
 });
 
-
 const getTask = Asynchandler(async (req, res) => {
     const { taskId } = req.params;
 
@@ -263,4 +332,4 @@ const getTask = Asynchandler(async (req, res) => {
         }));
 })
 
-export { createTask, alltask, mytask, activetask, notcompletedtask, getTask };
+export { createTask, alltask, mytask, activetask, notcompletedtask, getTask , todotask, completedtask };

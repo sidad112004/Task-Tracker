@@ -1,8 +1,8 @@
 import React from 'react'
-
+import Upadateusercomponent from '../components/updateuser/Updateuser.jsx'
 function Updateuser() {
   return (
-    <div>Updateuser</div>
+    <div><Upadateusercomponent/></div>
   )
 }
 
