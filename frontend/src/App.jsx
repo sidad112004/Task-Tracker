@@ -4,6 +4,8 @@ import Home from './components/home/Home'
 import Detailtask from './components/detailtask/Detailtask'
 import Createtask from './components/createtask/Createtask.jsx'
 import Updateuser from './components/updateuser/Updateuser.jsx'
+import Signup from './components/signup/Signup.jsx'
+import Login from './components/login/Login.jsx'
 function App() {
   return (
     <>
@@ -11,7 +13,9 @@ function App() {
     {/* <Home/> */}
     {/* <Detailtask/> */}
     {/* <Createtask/> */}
-    <Updateuser/>
+    {/* <Updateuser/> */}
+    {/* <Signup/> */}
+    <Login/>
     </>
   )
 }
