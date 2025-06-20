@@ -175,11 +175,32 @@ const notcompletedtask = Asynchandler(async (req, res) => {
     const updatePromises = overdueTasks.map(task =>
         prisma.task.update({
             where: { id: task.id },
-            data: { status: "NOTCOMPLETED" }
+            data: { status: "EXTENDED"  }
         })
     );
 
+    
     await Promise.all(updatePromises);
+
+
+    const changeexpert =  overdueTasks.map(task => {
+        const messageTracker = prisma.messageTracker.findFirst({
+            where: {
+                taskId: task.id,
+            },
+        });
+        const updatedmessageTracker = prisma.messageTracker.update({
+            where:{
+                id: messageTracker.id
+            },
+            data:{
+                expertId:req.user.id.toString()
+            }
+        })
+    })
+    
+    await Promise.all(changeexpert);
+
 
     return res
         .status(200)
