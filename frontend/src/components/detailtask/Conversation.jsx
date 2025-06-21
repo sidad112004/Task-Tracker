@@ -11,7 +11,6 @@ function Conversation({ props: messagetrackid }) {
   const [loading, setLoading] = useState(true);
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
-  const [toggling, setToggling] = useState(false);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -19,11 +18,6 @@ function Conversation({ props: messagetrackid }) {
         const response = await axios.get(`/api/message/${messagetrackid}`);
         const data = response.data.status.data || [];
         setMessages(data);
-
-        const chatStatus = response?.data?.status?.chatActive;
-        if (typeof chatStatus === 'boolean') {
-          setChatEnabled(chatStatus);
-        }
       } catch (error) {
         console.error(error);
         toast.error(
@@ -37,32 +31,38 @@ function Conversation({ props: messagetrackid }) {
     fetchMessages();
   }, [messagetrackid]);
 
+  useEffect(() => {
+    const fetchChatStatus = async () => {
+      try {
+        const response = await axios.post('http://localhost:3000/api/message/chatstatus', {
+          messagetrackid,
+        });
+        const chatStatus = response?.data?.status?.data?.chatActive;
+        if (typeof chatStatus === 'boolean') {
+          setChatEnabled(chatStatus);
+        }
+      } catch (error) {
+        console.error('Error fetching chat status', error);
+      }
+    };
+
+    fetchChatStatus();
+  }, [messagetrackid]);
+
   const handleToggleChat = async () => {
     const nextStatus = !chatEnabled;
-    setToggling(true);
+    setChatEnabled(nextStatus);
     try {
-      const response = await axios.post('/api/message/chatactive', {
-        messagetrackid,
-        val: nextStatus,
-      });
-
-      const serverStatus = response?.data?.status?.data?.chatActive;
-
-      console.log(serverStatus);
-
-      
-      if (typeof serverStatus === 'boolean') {
-        setChatEnabled(serverStatus);
-        toast.success(`Chat ${serverStatus ? 'enabled' : 'disabled'} successfully`);
-      } else {
-        toast.error('Unexpected response from server');
-      }
+      const response = await axios.post('http://localhost:3000/api/message/chatactive',
+        { messagetrackid, val: nextStatus },
+        { withCredentials: true }
+      );
+      console.log('Chat status updated:', response.data);
     } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.message || 'Error toggling chat');
-    } finally {
-      setToggling(false);
+      console.log('Error updating chat status:', error);
+      toast.error('Failed to update chat status');
     }
+    console.log('Chat Enabled:', nextStatus);
   };
 
   const handleSendMessage = async () => {
@@ -103,14 +103,12 @@ function Conversation({ props: messagetrackid }) {
               className="hidden"
               checked={chatEnabled}
               onChange={handleToggleChat}
-              disabled={toggling}
             />
             <div className="w-10 h-6 relative">
               <svg
                 aria-label="enabled"
-                className={`absolute w-6 h-6 top-0 left-0 transition-opacity duration-200 ${
-                  chatEnabled ? 'opacity-100' : 'opacity-0'
-                }`}
+                className={`absolute w-6 h-6 top-0 left-0 transition-opacity duration-200 ${chatEnabled ? 'opacity-100' : 'opacity-0'
+                  }`}
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
               >
@@ -126,9 +124,8 @@ function Conversation({ props: messagetrackid }) {
               </svg>
               <svg
                 aria-label="disabled"
-                className={`absolute w-6 h-6 top-0 left-0 transition-opacity duration-200 ${
-                  !chatEnabled ? 'opacity-100' : 'opacity-0'
-                }`}
+                className={`absolute w-6 h-6 top-0 left-0 transition-opacity duration-200 ${!chatEnabled ? 'opacity-100' : 'opacity-0'
+                  }`}
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="none"
