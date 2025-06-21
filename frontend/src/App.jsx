@@ -11,7 +11,7 @@ function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const authStatus = useSelector((state) => state.auth.status);
- 
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -19,10 +19,10 @@ function App() {
           withCredentials: true,
         });
 
-       
+
 
         if (res.data && res.data.data) {
-           
+
           dispatch(authLogin(res.data.data));
         } else {
           dispatch(authLogout());
@@ -44,9 +44,12 @@ function App() {
 
   return (
     <>
-       <Navbar />
+      <Navbar />
       <Outlet />
-      <Toaster />
+      <Toaster
+        position="bottom-right"
+        reverseOrder={false}
+      />
     </>
   );
 }

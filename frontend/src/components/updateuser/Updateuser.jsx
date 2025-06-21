@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import Select from 'react-select';
+import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast'; // ✅ import toaster
 import Container from '../container/Container.jsx';
 
 function Updateuser() {
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedRole, setSelectedRole] = useState(null);
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const skillsOptions = [
     { value: 'HTML', label: 'HTML' },
     { value: 'CSS', label: 'CSS' },
     { value: 'JavaScript', label: 'JavaScript' },
     { value: 'React', label: 'React' },
-    { value: 'Node.js', label: 'Node.js' },
+    { value: 'Nodejs', label: 'Nodejs' },
     { value: 'Express.js', label: 'Express.js' },
     { value: 'MongoDB', label: 'MongoDB' },
     { value: 'TypeScript', label: 'TypeScript' },
@@ -30,8 +34,8 @@ function Updateuser() {
   const customStyles = {
     control: (base) => ({
       ...base,
-      backgroundColor: '#1e293b', // bg-base-100 (dark)
-      borderColor: '#334155',     // border-base-300
+      backgroundColor: '#1e293b',
+      borderColor: '#334155',
       color: '#f1f5f9',
       padding: '2px',
     }),
@@ -75,15 +79,39 @@ function Updateuser() {
     }),
   };
 
+  const handleSubmit = async () => {
+    if (!email || !selectedRole || selectedSkills.length === 0) {
+      toast.error("Please fill all fields.");
+      return;
+    }
+
+    const data = {
+      role: selectedRole.value,
+      skill: selectedSkills.map(skill => skill.value),
+      useremail: email,
+    };
+
+    try {
+      setLoading(true);
+      const res = await axios.put("http://localhost:3000/api/user/updatebyadmin", data, {
+        withCredentials: true,
+      });
+      toast.success(res.data.message || "User updated successfully.");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Error updating user.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Container>
-      <h1 className='text-3xl font-bold text-center my-5 mb-16 text-white'>
-        Update User
-      </h1>
+     
+      <h1 className='text-3xl font-bold text-center my-5 mb-16 text-white'>Update User</h1>
 
       <div className="hero bg-base-200 shadow-2xl border-2 border-base-300 rounded-xl md:w-1/2 mx-auto p-10">
         <div className="hero-content flex-col w-full">
-
+          
           {/* Email */}
           <label htmlFor="user-email" className="label">
             <span className="label-text text-white">User Email</span>
@@ -92,7 +120,9 @@ function Updateuser() {
             type="email"
             id="user-email"
             placeholder="example@email.com"
-            className="input input-lg w-full bg-base-100 text-white "
+            className="input input-lg w-full bg-base-100 text-white"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           {/* Role */}
@@ -132,7 +162,9 @@ function Updateuser() {
       </div>
 
       <div className='flex justify-center items-center mt-5'>
-        <button className="btn btn-primary btn-lg">Submit</button>
+        <button className="btn btn-primary btn-lg" onClick={handleSubmit} disabled={loading}>
+          {loading ? "Updating..." : "Submit"}
+        </button>
       </div>
     </Container>
   );
