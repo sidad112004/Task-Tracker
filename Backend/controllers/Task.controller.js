@@ -75,6 +75,10 @@ const alltask = Asynchandler(async (req, res) => {
 
     const tasks = await prisma.task.findMany({});
 
+    if(!tasks){
+        throw new ApiError(404, "No tasks found");
+    }
+    
     if (tasks.length === 0) {
         throw new ApiError(404, "No tasks found");
     }

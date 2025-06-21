@@ -7,7 +7,7 @@ An AI-powered task management system that combines human expertise with artifici
 ## 🎥 Demo Video
 
 📺 Watch the demo:  
-🔗 [YouTube Demo](https://www.youtube.com/watch?v=YOUR_VIDEO_LINK)
+🔗 [YouTube Demo](https://youtu.be/rZ0g89Ha2sM?si=I-MP4ZdGclmLgvlM)
 
 ---
 
