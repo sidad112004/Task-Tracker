@@ -139,9 +139,12 @@ const activetask = Asynchandler(async (req, res) => {
 })
 
 const todotask = Asynchandler(async (req, res) => {
+    
+   
+
     const user = await prisma.user.findUnique({
         where: {
-            id: req.user.id.toString()
+            id: req.user.id
         }
     });
     
@@ -152,7 +155,7 @@ const todotask = Asynchandler(async (req, res) => {
     if (user.role !== "EXPERT") {
         throw new ApiError(403, "Only experts can view TODO tasks");
     }
-
+   
     const tasks = await prisma.task.findMany({
 
         where: {
@@ -270,14 +273,23 @@ const notcompletedtask = Asynchandler(async (req, res) => {
     })
     
     await Promise.all(changeexpert);
+ 
+    const notcompletedTasks = await prisma.task.findMany({
+        where: {
+            status: "EXTENDED"
+        }
+    });
 
+    if (!notcompletedTasks) {
+        throw new ApiError(404, "No overdue tasks found");
+    }
 
     return res
         .status(200)
         .json(new ApiRespoance({
             success: true,
             message: "Overdue tasks updated to NOTCOMPLETED successfully",
-            data: overdueTasks
+            data: notcompletedTasks
         }));
 
 });
