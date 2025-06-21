@@ -38,8 +38,11 @@ function Conversation({ props: messagetrackid }) {
   }, [messagetrackid]);
 
   const handleToggleChat = async () => {
+    if (toggling) return;
+
     const nextStatus = !chatEnabled;
     setToggling(true);
+
     try {
       const response = await axios.post('/api/message/chatactive', {
         messagetrackid,
@@ -65,6 +68,7 @@ function Conversation({ props: messagetrackid }) {
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
     setSending(true);
+
     try {
       const response = await axios.post('/api/message/create', {
         messagetrackid,
@@ -93,52 +97,17 @@ function Conversation({ props: messagetrackid }) {
     <div className="bg-base-100 p-4 border border-base-300 rounded-md">
       {(role === 'ADMIN' || role === 'EXPERT') && (
         <div className="mb-4 flex justify-center">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <span className="text-sm font-medium">Chat</span>
-            <input
-              type="checkbox"
-              className="hidden"
-              checked={chatEnabled}
-              onChange={handleToggleChat}
-              disabled={toggling}
-            />
-            <div className="w-10 h-6 relative">
-              <svg
-                aria-label="enabled"
-                className={`absolute w-6 h-6 top-0 left-0 transition-opacity duration-200 ${
-                  chatEnabled ? 'opacity-100' : 'opacity-0'
-                }`}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-              >
-                <g
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                  strokeWidth="4"
-                  fill="none"
-                  stroke="green"
-                >
-                  <path d="M20 6 9 17l-5-5"></path>
-                </g>
-              </svg>
-              <svg
-                aria-label="disabled"
-                className={`absolute w-6 h-6 top-0 left-0 transition-opacity duration-200 ${
-                  !chatEnabled ? 'opacity-100' : 'opacity-0'
-                }`}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="red"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-              </svg>
-            </div>
-          </label>
+          <button
+            className={`btn ${chatEnabled ? 'btn-success' : 'btn-error'}`}
+            onClick={handleToggleChat}
+            disabled={toggling}
+          >
+            {toggling
+              ? 'Toggling...'
+              : chatEnabled
+              ? 'Disable Chat'
+              : 'Enable Chat'}
+          </button>
         </div>
       )}
 

@@ -26,7 +26,7 @@ const myallMessages = Asynchandler(async (req, res) => {
         }
     })
 
-    if (!messages || messages.length === 0) {
+    if (!messages ) {
         throw new ApiError(404, "No messages found for this track ID");
     }
     return res
