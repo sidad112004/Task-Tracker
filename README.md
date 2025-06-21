@@ -89,7 +89,7 @@ When a user creates a task:
 
 ## 📁 Project Folder Structure
 
-```bash
+\`\`\`bash
 task-tracker/
 │
 ├── backend/
@@ -112,3 +112,96 @@ task-tracker/
 │   ├── tailwind.config.js
 │   ├── vite.config.js
 │   └── .env
+\`\`\`
+
+---
+
+## 🧪 Sample .env Files
+
+### 🔙 Backend .env
+
+\`\`\`env
+PORT=3000
+DATABASE_URL=mongodb+srv://<username>:<password>@cluster0.mongodb.net/Task-Tracker
+JWT_SECRET=your_jwt_secret_key
+GEMINI_API_KEY=your_gemini_api_key
+INNGEST_EVENT_KEY=your_inngest_event_key
+\`\`\`
+
+> Replace <username> and <password> with your MongoDB credentials.
+
+---
+
+## 🚀 How to Run Locally
+
+### 1️⃣ Clone the Repository
+
+\`\`\`bash
+git clone https://github.com/YOUR_USERNAME/task-tracker.git
+cd task-tracker
+\`\`\`
+
+### 2️⃣ Setup & Run Backend
+
+\`\`\`bash
+cd backend
+npm install
+# Add your .env file as shown above
+npm run dev
+\`\`\`
+
+### 3️⃣ Setup & Run Frontend
+
+\`\`\`bash
+cd ../frontend
+npm install
+npm run dev
+\`\`\`
+
+> Frontend runs at: http://localhost:5173
+
+### 4️⃣ Run Inngest Dev Event Handler
+
+From the `backend/` directory:
+
+\`\`\`bash
+npx inngest-cli dev --sdk-url=http://localhost:3000/api/inngest
+\`\`\`
+
+---
+
+## 📈 Task Flow Example
+
+\`\`\`text
+[User] --> [Create Task]
+         --> [Inngest AI Agent Triggered]
+                  --> [Gemini analyzes and summarizes]
+                  --> [Determine Expertise]
+                  --> [Assign to Expert + Due Date]
+[Expert] --> [View Task & Chat] --> [Complete Task ✅]
+[Admin] --> [Handle if Overdue]
+\`\`\`
+
+---
+
+## 💡 Future Enhancements
+
+- WebSocket-based real-time chat  
+- Email + push notifications  
+- Expert performance dashboard  
+- User rating system  
+- Task filtering & analytics  
+
+---
+
+## 📬 Author
+
+**Siddesh**  
+📧 siddhesh112004@example.com  
+🔗 [LinkedIn](https://www.linkedin.com/in/siddesh-dhanlobhe-4594b028b/)
+
+---
+
+## 📝 License
+
+This project is licensed under the **MIT License**.
