@@ -84,7 +84,7 @@ const alltask = Asynchandler(async (req, res) => {
         .json(new ApiRespoance({
             success: true,
             message: "Tasks fetched successfully",
-            data: tasks
+            data: tasks.reverse()
         }))
 })
 
@@ -109,7 +109,7 @@ const mytask = Asynchandler(async (req, res) => {
         .json(new ApiRespoance({
             success: true,
             message: "Tasks fetched successfully",
-            data: tasks
+            data: tasks.reverse()
         }))
 })
 
@@ -134,7 +134,7 @@ const activetask = Asynchandler(async (req, res) => {
         .json(new ApiRespoance({
             success: true,
             message: "Active tasks fetched successfully",
-            data: tasks
+            data: tasks.reverse()
         }))
 })
 
@@ -174,7 +174,7 @@ const todotask = Asynchandler(async (req, res) => {
         .json(new ApiRespoance({
             success: true,
             message: "TODO tasks fetched successfully",
-            data: tasks
+            data: tasks.reverse()
         }));
 })
 
@@ -210,7 +210,7 @@ const completedtask = Asynchandler(async (req, res) => {
         .json(new ApiRespoance({
             success: true,
             message: "Completed tasks fetched successfully",
-            data: tasks
+            data: tasks.reverse()
         }));
 })
 
@@ -289,7 +289,7 @@ const notcompletedtask = Asynchandler(async (req, res) => {
         .json(new ApiRespoance({
             success: true,
             message: "Overdue tasks updated to NOTCOMPLETED successfully",
-            data: notcompletedTasks
+            data: notcompletedTasks.reverse()
         }));
 
 });
