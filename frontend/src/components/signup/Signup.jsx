@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 function Signup() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: ''
   });
-
+  const navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -15,16 +17,31 @@ function Signup() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Signup Data:', formData);
-    // Place your POST request logic here
+    try {
+      const response = await axios.post(
+        '/api/user/signup',
+        formData,
+        {
+          withCredentials: true
+        }
+      );
+      toast.success('Signup successful!');
+
+      navigate('/login'); 
+
+    } catch (error) {
+      console.error('Signup Error:', error);
+      const message =
+        error.response?.data?.message || 'Something went wrong during signup.';
+      toast.error(message);
+    }
   };
 
   return (
     <div className="hero min-h-screen bg-base-200">
       <div className="hero-content flex-col lg:flex-row-reverse gap-16">
-        
         {/* Info Section */}
         <div className="text-center lg:text-left max-w-xl">
           <h1 className="text-6xl font-bold mb-4">Sign Up Now!</h1>
@@ -36,7 +53,6 @@ function Signup() {
         {/* Signup Form */}
         <div className="card bg-base-100 w-full md:w-1/2 p-8 shadow-2xl rounded-xl">
           <form onSubmit={handleSubmit} className="card-body p-0 space-y-4">
-            
             <div>
               <label className="label text-lg font-semibold">Name</label>
               <input

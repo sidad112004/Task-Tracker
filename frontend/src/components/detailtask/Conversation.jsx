@@ -34,7 +34,7 @@ function Conversation({ props: messagetrackid }) {
   useEffect(() => {
     const fetchChatStatus = async () => {
       try {
-        const response = await axios.post('http://localhost:3000/api/message/chatstatus', {
+        const response = await axios.post('/api/message/chatstatus', {
           messagetrackid,
         });
         const chatStatus = response?.data?.status?.data?.chatActive;
@@ -53,7 +53,7 @@ function Conversation({ props: messagetrackid }) {
     const nextStatus = !chatEnabled;
     setChatEnabled(nextStatus);
     try {
-      const response = await axios.post('http://localhost:3000/api/message/chatactive',
+      const response = await axios.post('/api/message/chatactive',
         { messagetrackid, val: nextStatus },
         { withCredentials: true }
       );
