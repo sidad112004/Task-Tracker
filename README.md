@@ -87,46 +87,19 @@ When a user creates a task:
 
 ---
 
-## 📁 Project Folder Structure
-
-\`\`\`bash
-task-tracker/
-│
-├── backend/
-│   ├── controllers/
-│   ├── routes/
-│   ├── inngest/
-│   ├── prisma/
-│   ├── utils/
-│   ├── middleware/
-│   ├── .env
-│   ├── app.js
-│   └── index.js
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── store/
-│   │   └── App.jsx
-│   ├── tailwind.config.js
-│   ├── vite.config.js
-│   └── .env
-\`\`\`
-
 ---
 
 ## 🧪 Sample .env Files
 
 ### 🔙 Backend .env
+.env
 
-\`\`\`env
 PORT=3000
 DATABASE_URL=mongodb+srv://<username>:<password>@cluster0.mongodb.net/Task-Tracker
 JWT_SECRET=your_jwt_secret_key
 GEMINI_API_KEY=your_gemini_api_key
 INNGEST_EVENT_KEY=your_inngest_event_key
-\`\`\`
+
 
 > Replace <username> and <password> with your MongoDB credentials.
 
